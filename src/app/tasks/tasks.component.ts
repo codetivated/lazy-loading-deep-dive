@@ -30,10 +30,17 @@ export const resolveUserTasks: ResolveFn<Task[]> = (
       (task) => task.userId === activatedRouteSnapshot.paramMap.get('userId')
     );
 
+  // this code was sorting by id previously (from the course) but I changed it to now sort by dueDate
+  //   if (order && order === 'asc') {
+  //     tasks.sort((a, b) => (a.id > b.id ? 1 : -1));
+  //   } else {
+  //     tasks.sort((a, b) => (a.id > b.id ? -1 : 1));
+  //   }
+
   if (order && order === 'asc') {
-    tasks.sort((a, b) => (a.id > b.id ? 1 : -1));
+    tasks.sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1));
   } else {
-    tasks.sort((a, b) => (a.id > b.id ? -1 : 1));
+    tasks.sort((a, b) => (a.dueDate > b.dueDate ? -1 : 1));
   }
 
   return tasks.length ? tasks : [];
