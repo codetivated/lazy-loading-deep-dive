@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
 
-import { TasksComponent, resolveUserTasks } from '../tasks/tasks.component';
-import { NewTaskComponent, canLeaveEditPage } from '../tasks/new-task/new-task.component';
+import {
+  NewTaskComponent,
+  canLeaveEditPage,
+} from '../tasks/new-task/new-task.component';
+import { resolveUserTasks } from '../tasks/tasks.component';
 
 export const routes: Routes = [
   {
@@ -11,7 +14,10 @@ export const routes: Routes = [
   },
   {
     path: 'tasks', // <your-domain>/users/<uid>/tasks
-    component: TasksComponent,
+    loadComponent: () =>
+      import('../tasks/tasks.component').then(
+        (module) => module.TasksComponent
+      ),
     runGuardsAndResolvers: 'always',
     resolve: {
       userTasks: resolveUserTasks,
@@ -20,6 +26,8 @@ export const routes: Routes = [
   {
     path: 'tasks/new',
     component: NewTaskComponent,
-    canDeactivate: [canLeaveEditPage]
+    canDeactivate: [canLeaveEditPage],
   },
 ];
+
+// here we are loading the TasksComponent lazily when the user navigates to the 'tasks' path
