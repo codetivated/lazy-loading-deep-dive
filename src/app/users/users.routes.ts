@@ -1,10 +1,33 @@
-import { Routes } from '@angular/router';
+import { ResolveFn, Routes } from '@angular/router';
 
 import {
   NewTaskComponent,
   canLeaveEditPage,
 } from '../tasks/new-task/new-task.component';
-import { resolveUserTasks } from '../tasks/tasks.component';
+import { TasksService } from '../tasks/tasks.service';
+import { inject } from '@angular/core';
+import { Task } from '../tasks/task/task.model';
+
+const resolveUserTasks: ResolveFn<Task[]> = (
+  activatedRouteSnapshot,
+  routerState
+) => {
+  const order = activatedRouteSnapshot.queryParams['order'];
+  const tasksService = inject(TasksService);
+  const tasks = tasksService
+    .allTasks()
+    .filter(
+      (task) => task.userId === activatedRouteSnapshot.paramMap.get('userId')
+    );
+
+  if (order && order === 'asc') {
+    tasks.sort((a, b) => (a.id > b.id ? 1 : -1));
+  } else {
+    tasks.sort((a, b) => (a.id > b.id ? -1 : 1));
+  }
+
+  return tasks.length ? tasks : [];
+};
 
 export const routes: Routes = [
   {
@@ -29,5 +52,3 @@ export const routes: Routes = [
     canDeactivate: [canLeaveEditPage],
   },
 ];
-
-// here we are loading the TasksComponent lazily when the user navigates to the 'tasks' path
